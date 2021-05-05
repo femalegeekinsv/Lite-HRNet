@@ -14,12 +14,13 @@ from mmpose import __version__
 from mmpose.apis import train_model
 from mmpose.datasets import build_dataset
 from models import build_posenet
+from datasets import TopDownEnvisatCocoDataset
 from mmpose.utils import collect_env, get_root_logger
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a pose model')
-    parser.add_argument('config', help='train config file path')
+    parser.add_argument('config', default = 'configs/top_down/lite_hrnet/Envisat/litehrnet_18_coco_256x256_Envisat+IC.py',help='train config file path')
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
         '--resume-from', help='the checkpoint file to resume from')
