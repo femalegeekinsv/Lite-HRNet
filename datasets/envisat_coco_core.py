@@ -285,8 +285,9 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
             if det_res['category_id'] != 1:
                 continue
 
-            image_file = os.path.join(self.img_prefix,
-                                      self.id2name[det_res['image_id']])
+            img_id = det_res['image_id']
+            image_file = os.path.join(self.img_prefix, self._get_subfolder_name(img_id),
+                                      self.id2name[img_id])
             box = det_res['bbox']
             score = det_res['score']
 
@@ -357,7 +358,7 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
 
             batch_size = len(image_paths)
             for i in range(batch_size):
-                image_id = self.name2id[image_paths[i][len(self.img_prefix):]]
+                image_id = self.name2id[(image_paths[i][0:]).split("/")[-1]]
                 kpts[image_id].append({
                     'keypoints': preds[i],
                     'center': boxes[i][0:2],
