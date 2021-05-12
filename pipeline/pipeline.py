@@ -1,5 +1,6 @@
 import mmpose
 import random
+import torch
 import numpy as np
 import torchvision.transforms as transforms
 
@@ -56,6 +57,32 @@ class RandomGrayScale:
        img = results['img']
        pil_img = Image.fromarray(img)
        transform = transforms.RandomGrayscale(self.probability)
+       transformed = transform(pil_img)
+       results['img'] = np.array(transformed)
+       return results
+
+
+
+
+@PIPELINES.register_module()
+class RandomErase:
+    """Data augmentation with random erase.
+
+    Required keys: 'img'
+    Modifies key: 'img'
+
+    Args:
+        probability (float): 0-1 random gray convert probability
+    """
+
+    def __init__(self, probability=0.5, scale=(0.01,0.01)):
+        self.probability = probability
+        self.scale = scale
+
+    def __call__(self, results):
+       img = results['img']
+       pil_img = Image.fromarray(img)
+       transform = transforms.Compose([transforms.ToTensor(),transforms.RandomErasing(scale=[0.01,0.01]),transforms.ToPILImage()])
        transformed = transform(pil_img)
        results['img'] = np.array(transformed)
        return results
