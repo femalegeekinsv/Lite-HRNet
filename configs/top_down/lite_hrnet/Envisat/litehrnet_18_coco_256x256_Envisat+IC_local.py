@@ -147,9 +147,9 @@ val_pipeline = [
         ]),
 ]
 test_pipeline = val_pipeline
-data_root = '/home/kuldeep/PhD/Code/data/Envisat'
+data_root = '../data/Envisat'
 data = dict(
-    samples_per_gpu=8,
+    samples_per_gpu=64,
     workers_per_gpu=4,
     train=dict(
         type='TopDownEnvisatCocoDataset',
