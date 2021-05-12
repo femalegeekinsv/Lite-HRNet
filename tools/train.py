@@ -15,6 +15,7 @@ from mmpose.apis import train_model
 from mmpose.datasets import build_dataset
 from models import build_posenet
 from datasets import TopDownEnvisatCocoDataset
+from pipeline.pipeline import ColorJitter, RandomGrayScale
 from mmpose.utils import collect_env, get_root_logger
 
 
