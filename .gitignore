@@ -1,2 +1,5 @@
 /.vscode
 /work_dirs
+/__pycache__
+/*/__pycache__
+/*/*/__pycache__

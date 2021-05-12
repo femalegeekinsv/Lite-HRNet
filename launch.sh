@@ -1,5 +1,5 @@
 #!/bin/bash -l
-###SBATCH --job-name=lite-hrnet-demo
+#SBATCH --job-name=lite-hrnet-demo
 ###SBATCH --dependency singleton
 #SBATCH --time=1-12:00:00
 #SBATCH --partition=gpu # If gpu: set '-G <gpus>'
@@ -7,7 +7,7 @@
 #SBATCH -N 1 # Number of nodes
 #SBATCH --ntasks-per-node=2
 #SBATCH -c 1 # multithreading per task
-#SBATCH -o %x-%j.out # <jobname>-<jobid>.out           
+#SBATCH -o %x-%j.out # slurm_output/<jobname>-<jobid>.out           
 
 export MODULEPATH=/opt/apps/resif/iris/2019b/gpu/modules/all
 module load lang/Python/3.7.4-GCCcore-8.3.0
