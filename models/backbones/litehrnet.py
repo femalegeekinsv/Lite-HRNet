@@ -710,7 +710,8 @@ class LiteHRNet(nn.Module):
                  norm_cfg=dict(type='BN'),
                  norm_eval=False,
                  with_cp=False,
-                 zero_init_residual=False):
+                 zero_init_residual=False,
+                 frozen_stages=-1):
         super().__init__()
         self.extra = extra
         self.conv_cfg = conv_cfg
@@ -718,7 +719,7 @@ class LiteHRNet(nn.Module):
         self.norm_eval = norm_eval
         self.with_cp = with_cp
         self.zero_init_residual = zero_init_residual
-
+        self.frozen_stages = frozen_stages
         self.stem = Stem(
             in_channels,
             stem_channels=self.extra['stem']['stem_channels'],
@@ -856,6 +857,25 @@ class LiteHRNet(nn.Module):
 
         return nn.Sequential(*modules), in_channels
 
+    def _freeze_stages(self):
+        """Freeze parameters."""
+        if self.frozen_stages >= 0:
+            if self.stem:
+                self.stem.eval()
+                for param in self.stem.parameters():
+                    param.requires_grad = False
+            else:
+                self.norm1.eval()
+                for m in [self.conv1, self.norm1]:
+                    for param in m.parameters():
+                        param.requires_grad = False
+
+        for i in range(1, self.frozen_stages + 1):
+            m = getattr(self, f'stage{i}')
+            m.eval()
+            for param in m.parameters():
+                param.requires_grad = False
+
     def init_weights(self, pretrained=None):
         """Initialize the weights in backbone.
 
@@ -909,6 +929,7 @@ class LiteHRNet(nn.Module):
     def train(self, mode=True):
         """Convert the model into training mode."""
         super().train(mode)
+        self._freeze_stages()
         if mode and self.norm_eval:
             for m in self.modules():
                 if isinstance(m, _BatchNorm):
