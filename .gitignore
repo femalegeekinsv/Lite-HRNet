@@ -1,6 +1,7 @@
 /.vscode
 /work_dirs
-/__pycache__
-/*/__pycache__
-/*/*/__pycache__
-.ipynb_checkpoints/inference-checkpoint.ipynb
+/__pycache__/*
+/*/__pycache__/*
+/*/*/__pycache__/*
+/*/*/__pycache__/*
+.ipynb_checkpoints
