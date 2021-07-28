@@ -3,6 +3,45 @@
 ## Introduction
 This is an unofficial fork for pytorch implementation of [Lite-HRNet: A Lightweight High-Resolution Network](https://arxiv.org/abs/2104.06403) repurposed for spacecraft pose estimation. 
 
+
+Additions: 
+1. Support for freezing stages
+2. Custom Training Randomizers in `pipeline/pipeline.py`
+
+To use custom randomizers in the training, see the below example for `train_pipeline` variable in the config
+```python
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='ColorJitter',
+        brightness=0.4, contrast= 0.4, probability=0.5),
+    dict(
+        type='RandomGrayScale',
+        probability=0.2),
+    dict(type='TopDownRandomFlip', flip_prob=0.5),
+    dict(
+        type='TopDownGetRandomScaleRotation', rot_factor=30,
+        scale_factor=0.25),
+    dict(type='TopDownAffine'),
+    dict(type='ToTensor'),
+    dict(
+        type='NormalizeTensor',
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]),
+    dict(type='TopDownGenerateTarget', sigma=2),
+    dict(
+        type='Collect',
+        keys=['img', 'target', 'target_weight'],
+        meta_keys=[
+            'image_file', 'joints_3d', 'joints_3d_visible', 'center', 'scale',
+            'rotation', 'bbox_score', 'flip_pairs'
+        ]),
+]
+```
+
+
+
+
 ------------------------------------------------------------------------
 
 
