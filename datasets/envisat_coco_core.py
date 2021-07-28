@@ -75,6 +75,7 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
         self.nms_thr = data_cfg['nms_thr']
         self.oks_thr = data_cfg['oks_thr']
         self.vis_thr = data_cfg['vis_thr']
+        
 
         self.ann_info['flip_pairs'] = []
 
@@ -105,7 +106,8 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
         self.id2name, self.name2id = self._get_mapping_id_name(self.coco.imgs)
         self.dataset_name = 'coco'
 
-        self.db = self._get_db()
+        kwargs = {'subfolders': False} # TODO: Need to figure out how to pass from cfg
+        self.db = self._get_db(**kwargs)
 
         print(f'=> num_images: {self.num_images}')
         print(f'=> load {len(self.db)} samples')
@@ -131,24 +133,24 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
 
         return id2name, name2id
 
-    def _get_db(self):
+    def _get_db(self, **kwargs):
         """Load dataset."""
         if (not self.test_mode) or self.use_gt_bbox:
             # use ground truth bbox
-            gt_db = self._load_coco_keypoint_annotations()
+            gt_db = self._load_coco_keypoint_annotations(**kwargs)
         else:
             # use bbox from detection
             gt_db = self._load_coco_person_detection_results()
         return gt_db
 
-    def _load_coco_keypoint_annotations(self):
+    def _load_coco_keypoint_annotations(self, **kwargs):
         """Ground truth bbox and keypoints."""
         gt_db = []
         for img_id in self.img_ids:
-            gt_db.extend(self._load_coco_keypoint_annotation_kernel(img_id))
+            gt_db.extend(self._load_coco_keypoint_annotation_kernel(img_id, **kwargs))
         return gt_db
 
-    def _load_coco_keypoint_annotation_kernel(self, img_id):
+    def _load_coco_keypoint_annotation_kernel(self, img_id, **kwargs):
         """load annotation from COCOAPI.
 
         Note:
@@ -198,8 +200,11 @@ class TopDownEnvisatCocoDataset(TopDownBaseDataset):
             joints_3d_visible[:, :2] = np.minimum(1, keypoints[:, 2:3])
 
             center, scale = self._xywh2cs(*obj['clean_bbox'][:4])
-
-            image_file = os.path.join(self.img_prefix, self._get_subfolder_name(img_id), self.id2name[img_id])
+            if kwargs['subfolders']:
+                image_file = os.path.join(self.img_prefix, self._get_subfolder_name(img_id), self.id2name[img_id])
+            else:
+                image_file = os.path.join(self.img_prefix, self.id2name[img_id])
+    
             rec.append({
                 'image_file': image_file,
                 'center': center,

@@ -8,7 +8,7 @@ evaluation = dict(interval=10, metric='mAP')
 
 optimizer = dict(
     type='Adam',
-    lr=1e-3,
+    lr=5e-4,
 )
 optimizer_config = dict(grad_clip=None)
 # learning policy
@@ -19,7 +19,7 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=0.001,
     step=[170, 200])
-total_epochs = 210
+total_epochs = 350
 log_config = dict(
     interval=50,
     hooks=[dict(type='TextLoggerHook'),
@@ -39,7 +39,7 @@ model = dict(
     backbone=dict(
         type='LiteHRNet',
         in_channels=3,
-        frozen_stages=-1,
+        frozen_stages=2,
         extra=dict(
             stem=dict(stem_channels=32, out_channels=32, expand_ratio=1),
             num_stages=3,
@@ -68,7 +68,7 @@ model = dict(
     test_cfg=dict(
         flip_test=False,
         post_process=True,
-        shift_heatmap=True,
+        shift_heatmap=False,
         unbiased_decoding=False,
         modulate_kernel=11),
     loss_pose=dict(type='JointsMSELoss', use_target_weight=True))
@@ -164,9 +164,9 @@ test_pipeline = val_pipeline
 data_root = '/home/kuldeep/PhD/Code/data/Envisat'
 dataset_name = 'ESTEC_Images'
 seed_id = 1
-num_shots = 1
+num_shots = 5
 data = dict(
-    samples_per_gpu=1,
+    samples_per_gpu=2,
     workers_per_gpu=4,
     train=dict(
         type='TopDownEnvisatCocoDataset',
